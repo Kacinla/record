@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖書庫</title>
+    <style>
+        :root {
+            --bg-color: #EEE0C7;          /* 背景色：柔和米白 */
+            --card-bg: #ffffff;           /* 卡片底色：純白 */
+            --text-main: #4A342B;         /* 主要文字：深咖啡 */
+            --text-sub: #A65E3F;          /* 次要文字：磚紅 */
+            --accent-primary: #C58A52;    /* 重點按鈕色：焦糖棕 */
+            --accent-hover: #b47a46;      
+            --accent-blue: #A65E3F;       /* 同步按鈕採用協調的磚紅邊框 */
+            --border-color: #DDB56C;      /* 邊框色：琥珀金 */
+            --shadow: 0 10px 25px -5px rgba(74, 52, 43, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        /* 卡片區塊 */
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dcd3be;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background-color: #faf6ef;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--accent-primary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(197, 138, 82, 0.3);
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: 6px;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 跨裝置同步按鈕區 */
+        .sync-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .sync-btn {
+            flex: 1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .sync-btn:hover {
+            background-color: #faf6ef;
+        }
+
+        /* 書籍列表清單 */
+        .book-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .book-item {
+            background-color: var(--card-bg);
+            border: 1px solid #dcd3be;
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            box-shadow: 0 4px 12px rgba(74, 52, 43, 0.03);
+            transition: transform 0.2s;
+        }
+
+        .book-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .book-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1;
+            padding-right: 12px;
+            word-break: break-all;
+        }
+
+        .book-header-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .book-title-link {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .book-title-link:hover {
+            color: var(--accent-primary);
+            text-decoration: underline;
+        }
+
+        .type-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .type-manga {
+            background-color: #fce8db;
+            color: #A65E3F;
+        }
+
+        .type-novel {
+            background-color: #f7eedc;
+            color: #8c6239;
+        }
+
+        .book-meta {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .rating-display {
+            color: #C58A52;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .book-review {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            background-color: #faf6ef;
+            border-left: 3px solid var(--accent-primary);
+            padding: 6px 10px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 6px;
+            white-space: pre-wrap;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 6px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .icon-btn:hover {
+            background-color: #faf6ef;
+        }
+
+        .empty-hint {
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            padding: 24px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px dashed #dcd3be;
+        }
+
+        footer {
+            margin-top: 32px;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>圖書庫</h1>
+        </header>
+
+        <!-- 跨裝置同步工具列 -->
+        <div class="sync-box">
+            <button class="sync-btn" onclick="exportData()">📤 匯出資料（備份）</button>
+            <button class="sync-btn" onclick="importData()">📥 匯入資料（同步）</button>
+        </div>
+
+        <!-- 新增讀物表單 -->
+        <div class="card">
+            <h2>新增閱讀連結與評價</h2>
+            <form id="bookForm" onsubmit="addBook(event)">
+                <div class="form-group">
+                    <label>類型</label>
+                    <select id="bookType" class="form-select">
+                        <option value="小說">小說</option>
+                        <option value="漫畫">漫畫</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>書名 / 片名</label>
+                    <input type="text" id="bookTitle" class="form-input" placeholder="" required>
+                </div>
+                <div class="form-group">
+                    <label>目前看到的網址 (URL)</label>
+                    <input type="url" id="bookUrl" class="form-input" placeholder="" required>
+                </div>
+                <div class="form-group">
+                    <label>進度備註</label>
+                    <input type="text" id="bookProgress" class="form-input" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>評分 (0.5 到 5 分)</label>
+                    <select id="bookRating" class="form-select">
+                        <option value="5">5.0 分 (絕對神作)</option>
+                        <option value="4.5">4.5 分 (近乎完美)</option>
+                        <option value="4">4.0 分 (非常好看)</option>
+                        <option value="3.5">3.5 分 (優質推薦)</option>
+                        <option value="3" selected>3.0 分 (還不錯)</option>
+                        <option value="2.5">2.5 分 (普普通通)</option>
+                        <option value="2">2.0 分 (有點沉悶)</option>
+                        <option value="1.5">1.5 分 (勉強能看)</option>
+                        <option value="1">1.0 分 (難以下嚥)</option>
+                        <option value="0.5">0.5 分 (早期棄坑)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>個人評價 / 心得（選填）</label>
+                    <textarea id="bookReview" class="form-textarea" placeholder=""></textarea>
+                </div>
+                <button type="submit" class="submit-btn">加入連結簿 ✨</button>
+            </form>
+        </div>
+
+        <!-- 清單區塊 -->
+        <div class="card">
+            <h2>我的追漫清單</h2>
+            <div id="bookListContainer" class="book-list">
+                <!-- 動態生成 -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Link Reading Tracker &bull; Mobile Friendly
+    </footer>
+
+    <script>
+        let items = JSON.parse(localStorage.getItem('manga_novel_earth_tone_data')) || [];
+
+        function saveAndRender() {
+            localStorage.setItem('manga_novel_earth_tone_data', JSON.stringify(items));
+            renderItems();
+        }
+
+        function renderItems() {
+            const container = document.getElementById('bookListContainer');
+            container.innerHTML = '';
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="empty-hint">目前沒有連結紀錄，趕快加入第一本吧！</div>`;
+                return;
+            }
+
+            items.forEach(item => {
+                const badgeClass = item.type === '漫畫' ? 'type-manga' : 'type-novel';
+                const ratingText = `${Number(item.rating || 3).toFixed(1)} 分`;
+                const div = document.createElement('div');
+                div.className = 'book-item';
+                
+                let reviewHtml = item.review ? `<div class="book-review">💬 ${escapeHtml(item.review)}</div>` : '';
+
+                div.innerHTML = `
+                    <div class="book-info">
+                        <div class="book-header-row">
+                            <span class="type-badge ${badgeClass}">${item.type}</span>
+                            <a href="${escapeHtml(item.url)}" target="_blank" class="book-title-link">${escapeHtml(item.title)} ➔</a>
+                        </div>
+                        <div class="book-meta">
+                            <span class="rating-display">${ratingText}</span>
+                            <span>•</span>
+                            <span>進度：${escapeHtml(item.progress || '無備註')}</span>
+                        </div>
+                        ${reviewHtml}
+                    </div>
+                    <div class="book-actions">
+                        <button class="icon-btn" onclick="editItem(${item.id})" title="編輯資訊與評價">✏️</button>
+                        <button class="icon-btn" onclick="deleteItem(${item.id})" title="刪除">🗑️</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addBook(event) {
+            event.preventDefault();
+            const type = document.getElementById('bookType').value;
+            const titleInput = document.getElementById('bookTitle');
+            const urlInput = document.getElementById('bookUrl');
+            const progressInput = document.getElementById('bookProgress');
+            const ratingInput = document.getElementById('bookRating');
+            const reviewInput = document.getElementById('bookReview');
+
+            const newItem = {
+                id: Date.now(),
+                type: type,
+                title: titleInput.value.trim(),
+                url: urlInput.value.trim(),
+                progress: progressInput.value.trim() || "閱讀中",
+                rating: Number(ratingInput.value),
+                review: reviewInput.value.trim()
+            };
+
+            items.unshift(newItem);
+            saveAndRender();
+
+            titleInput.value = '';
+            urlInput.value = '';
+            progressInput.value = '';
+            reviewInput.value = '';
+        }
+
+        function editItem(id) {
+            const item = items.find(b => b.id === id);
+            if (!item) return;
+
+            const newTitle = prompt("修改書名：", item.title);
+            if (newTitle === null) return;
+            const newUrl = prompt("修改網址 (URL)：", item.url);
+            if (newUrl === null) return;
+            const newProgress = prompt("修改進度備註：", item.progress);
+            if (newProgress === null) return;
+            const newRating = prompt("修改評分 (輸入 0.5 到 5 之間的數字，例如 4.5)：", item.rating);
+            if (newRating === null) return;
+            const newReview = prompt("修改個人評價/心得：", item.review || "");
+            if (newReview === null) return;
+
+            item.title = newTitle.trim() || item.title;
+            item.url = newUrl.trim() || item.url;
+            item.progress = newProgress.trim() || "閱讀中";
+            
+            let parsedRating = parseFloat(newRating);
+            if (!isNaN(parsedRating)) {
+                item.rating = Math.min(5, Math.max(0.5, parsedRating));
+            }
+            
+            item.review = newReview.trim();
+
+            saveAndRender();
+        }
+
+        function deleteItem(id) {
+            if (confirm("確定要刪除這筆連結紀錄嗎？")) {
+                items = items.filter(b => b.id !== id);
+                saveAndRender();
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(items);
+            prompt("這是你的同步資料代碼，請複製它，並貼到另一台裝置的「匯入資料」中：", dataStr);
+        }
+
+        function importData() {
+            const dataStr = prompt("請貼上你在其他裝置複製的同步資料代碼：");
+            if (dataStr) {
+                try {
+                    const parsed = JSON.parse(dataStr);
+                    if (Array.isArray(parsed)) {
+                        items = parsed;
+                        saveAndRender();
+                        alert("同步成功！資料已更新 ✨");
+                    } else {
+                        alert("格式錯誤，請確認貼上的代碼是否正確。");
+                    }
+                } catch (e) {
+                    alert("解析失敗，請確認代碼內容。");
+                }
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        renderItems();
+    </script>
+</body>
+</html>
